@@ -1,11 +1,14 @@
 // External Dependencies
-import { UserButton } from "@clerk/nextjs";
 import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 
 // Relative Dependencies
 
-type Props = {};
+type Props = {
+  params: {
+    repoID: string;
+  };
+};
 
 const Page = async (props: Props) => {
   const res = auth();
@@ -14,11 +17,7 @@ const Page = async (props: Props) => {
     redirect("/");
   }
 
-  return (
-    <div className="h-24 w-screen">
-      <UserButton afterSignOutUrl="/" />
-    </div>
-  );
+  return <div className="flex"></div>;
 };
 
 export default Page;

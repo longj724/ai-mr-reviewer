@@ -3,7 +3,6 @@ import { Inter } from "next/font/google";
 
 // Relative Dependencies
 import "~/styles/globals.css";
-import { TRPCReactProvider } from "~/trpc/react";
 import { ClerkProvider } from "@clerk/nextjs";
 
 const inter = Inter({
@@ -23,12 +22,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
-      <html lang="en">
-        <body className={`font-sans ${inter.variable}`}>
-          <TRPCReactProvider>{children}</TRPCReactProvider>
-        </body>
-      </html>
-    </ClerkProvider>
+    <html lang="en" suppressHydrationWarning>
+      <ClerkProvider>
+        <body className={`font-sans ${inter.variable}`}>{children}</body>
+      </ClerkProvider>
+    </html>
   );
 }

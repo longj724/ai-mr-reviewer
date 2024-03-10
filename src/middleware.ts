@@ -7,7 +7,7 @@ export default authMiddleware({
 
   async afterAuth(auth, req, event) {
     if (auth.userId && auth.isPublicRoute) {
-      return NextResponse.redirect(new URL("/dashboard", req.url));
+      return NextResponse.redirect(new URL("/repositories", req.url));
     }
 
     return NextResponse.next();
@@ -15,7 +15,6 @@ export default authMiddleware({
 });
 
 export const config = {
-  // Protects all routes, including api/trpc.
   // See https://clerk.com/docs/references/nextjs/auth-middleware
   // for more information about configuring your Middleware
   matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],

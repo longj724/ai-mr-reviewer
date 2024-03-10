@@ -4,7 +4,7 @@ import { SignUp } from "@clerk/nextjs";
 const Page = () => {
   return (
     <div className="container flex flex-col items-center  ">
-      <SignUp redirectUrl="/dashboard" signInUrl="/sign-in" />
+      <SignUp redirectUrl="/repositories" signInUrl="/sign-in" />
     </div>
   );
 };
