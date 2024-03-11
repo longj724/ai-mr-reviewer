@@ -9,7 +9,7 @@ import SidebarItem from "./sidebar-item";
 const Sidebar = async () => {
   const groups: Group[] = await fetch("https://gitlab.com/api/v4/groups/", {
     headers: {
-      Authorization: `Bearer ${process.env.GITLAB_ACCESS_TOKEN}`,
+      Authorization: `Bearer ${process.env.NEXT_PUBLIC_GITLAB_ACCESS_TOKEN}`,
     },
   }).then((res) => res.json());
 
@@ -19,7 +19,7 @@ const Sidebar = async () => {
         `https://gitlab.com/api/v4/groups/${group.id}/projects`,
         {
           headers: {
-            Authorization: `Bearer ${process.env.GITLAB_ACCESS_TOKEN}`,
+            Authorization: `Bearer ${process.env.NEXT_PUBLIC_GITLAB_ACCESS_TOKEN}`,
           },
         },
       ).then((res) => res.json());
@@ -45,6 +45,7 @@ const Sidebar = async () => {
       }),
     };
   });
+
   return (
     <div className="fixed hidden h-screen flex-1 border-r border-zinc-200 bg-white md:flex md:w-60">
       <div className="flex w-full flex-col space-y-6">
