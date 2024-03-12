@@ -46,11 +46,9 @@ const Layout = ({ children, params: { groupName, projectID } }: Props) => {
 
     const delayDebounce = setTimeout(async () => {
       if (mergeRequests && mergeRequests.length > 0) {
-        const searchResults = mergeRequests.filter((mergeRequest) => {
-          return mergeRequest.title
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase());
-        });
+        const searchResults = mergeRequests.filter((mergeRequest) =>
+          mergeRequest.title.toLowerCase().includes(searchQuery.toLowerCase()),
+        );
         setSearchResults(searchResults);
       }
     }, 300);
@@ -91,21 +89,16 @@ const Layout = ({ children, params: { groupName, projectID } }: Props) => {
             className="py-2 text-sm text-gray-700 dark:text-gray-200"
             aria-labelledby="dropdownDefaultButton"
           >
-            {searchResults.map((mergeRequest) => {
-              return (
-                <li
-                  key={mergeRequest.id}
-                  className="cursor-pointer dark:hover:text-white"
+            {searchResults.map(({ id, iid, title }) => (
+              <li key={id} className="cursor-pointer dark:hover:text-white">
+                <Link
+                  href={`/repositories/${groupName}/${projectID}/${iid}`}
+                  className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600"
                 >
-                  <Link
-                    href={`/repositories/${groupName}/${projectID}/${mergeRequest.id}`}
-                    className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600"
-                  >
-                    {mergeRequest.title}
-                  </Link>
-                </li>
-              );
-            })}
+                  {title}
+                </Link>
+              </li>
+            ))}
           </ul>
         </div>
       </div>

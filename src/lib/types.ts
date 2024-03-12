@@ -17,6 +17,7 @@ export type Project = {
 
 export type MergeRequest = {
   id: string;
+  iid: string;
   title: string;
   description: string;
   // author: User;
