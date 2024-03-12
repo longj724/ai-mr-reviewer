@@ -12,17 +12,17 @@ import { cn } from "~/lib/utils";
 type Props = {
   children?: React.ReactNode;
   params: {
-    groupID: string;
+    groupName: string;
     projectID: string;
   };
 };
 
-const Layout = ({ children, params: { groupID, projectID } }: Props) => {
+const Layout = ({ children, params: { groupName, projectID } }: Props) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<MergeRequest[]>([]);
 
   const { data: mergeRequests } = useQuery(
-    [groupID, projectID],
+    [groupName, projectID],
     async () =>
       (await fetch(
         `https://gitlab.com/api/v4/projects/${projectID}/merge_requests/`,
@@ -98,7 +98,7 @@ const Layout = ({ children, params: { groupID, projectID } }: Props) => {
                   className="cursor-pointer dark:hover:text-white"
                 >
                   <Link
-                    href={`/repositories/${groupID}/${projectID}/${mergeRequest.id}`}
+                    href={`/repositories/${groupName}/${projectID}/${mergeRequest.id}`}
                     className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600"
                   >
                     {mergeRequest.title}
