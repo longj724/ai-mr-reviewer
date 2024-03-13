@@ -11,13 +11,13 @@ import { cn } from "~/lib/utils";
 
 const SidebarItem = ({ item }: { item: SidebarItemType }) => {
   const pathname = usePathname();
-  const [subMenuOpen, setSubMenuOpen] = useState(false);
+  const [subMenuOpen, setSubMenuOpen] = useState(pathname.includes(item.path));
   const toggleSubMenu = () => {
     setSubMenuOpen(!subMenuOpen);
   };
 
   return (
-    <div className="">
+    <div>
       {item.submenu ? (
         <>
           <button
@@ -45,7 +45,9 @@ const SidebarItem = ({ item }: { item: SidebarItemType }) => {
                     href={subItem.path}
                     className={cn(
                       "rounded-lg p-2 hover:bg-gray-200",
-                      subItem.path === pathname ? "bg-gray-100 font-bold" : "",
+                      pathname.includes(subItem.path)
+                        ? "bg-gray-100 font-bold"
+                        : "",
                     )}
                   >
                     <span>{subItem.title}</span>
@@ -59,7 +61,7 @@ const SidebarItem = ({ item }: { item: SidebarItemType }) => {
         <Link
           href={item.path}
           className={`flex flex-row items-center space-x-4 rounded-lg p-2 hover:bg-zinc-100 ${
-            item.path === pathname ? "bg-zinc-100" : ""
+            item.path.includes(pathname) ? "bg-zinc-100" : ""
           }`}
         >
           {item.icon}

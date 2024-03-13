@@ -33,7 +33,7 @@ const Sidebar = async () => {
   const sidebarItems: SidebarItemType[] = groupsWithProjects.map((group) => {
     return {
       title: group.name,
-      path: `/repositories/${group.id}`,
+      path: `/repositories/${group.path}`,
       icon: <Folder width="24" height="24" />,
       submenu: true,
       subMenuItems: group.projects.map((project: Project) => {
