@@ -1,22 +1,22 @@
 "use client";
 // External Dependencies
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 // Relative Dependencies
 import { MergeRequestDiff } from "~/lib/types";
+import FileDiff from "~/app/_components/FileDiff";
 
 type Props = {
   params: {
-    groupID: string;
+    groupName: string;
     projectID: string;
     mergeRequestID: string;
   };
 };
 
-const Page = ({ params: { groupID, projectID, mergeRequestID } }: Props) => {
+const Page = ({ params: { groupName, projectID, mergeRequestID } }: Props) => {
   const { data: mergeRequestDiffs } = useQuery(
-    [groupID, projectID, mergeRequestID],
+    [groupName, projectID, mergeRequestID],
     async () =>
       (await fetch(
         `https://gitlab.com/api/v4/projects/${projectID}/merge_requests/${mergeRequestID}/diffs`,
@@ -28,7 +28,13 @@ const Page = ({ params: { groupID, projectID, mergeRequestID } }: Props) => {
       ).then((res) => res.json())) as Promise<MergeRequestDiff[]>,
   );
 
-  return <div>MR Page</div>;
+  return (
+    <div className="flex h-full flex-col gap-2">
+      {mergeRequestDiffs?.map((diffInfo) => (
+        <FileDiff diffInfo={diffInfo} key={diffInfo.new_path} />
+      ))}
+    </div>
+  );
 };
 
 export default Page;

@@ -46,6 +46,15 @@ export type MergeRequestDiff = {
   old_path: string;
 };
 
+export type ParsedDiff = {
+  oldCode: string;
+  newCode: string;
+  startLineOld: number;
+  lineCountOld: number;
+  startLineNew: number;
+  lineCountNew: number;
+};
+
 export type SidebarItem = {
   title: string;
   path: string;

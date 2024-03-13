@@ -22,13 +22,11 @@ const SidebarItem = ({ item }: { item: SidebarItemType }) => {
         <>
           <button
             onClick={toggleSubMenu}
-            className={`hover-bg-zinc-100 flex w-full flex-row items-center justify-between rounded-lg p-2 hover:bg-zinc-100 ${
-              pathname.includes(item.path) ? "bg-zinc-100" : ""
-            }`}
+            className={`hover-bg-zinc-100 flex w-full flex-row items-center justify-between rounded-lg p-1 hover:bg-zinc-100`}
           >
-            <div className="flex flex-row items-center space-x-4">
+            <div className="flex flex-row items-center space-x-2">
               {item.icon}
-              <span className="flex text-xl  font-semibold">{item.title}</span>
+              <span className="flex text-xl  font-bold">{item.title}</span>
             </div>
 
             <div className={`${subMenuOpen ? "rotate-180" : ""} flex`}>
@@ -37,21 +35,23 @@ const SidebarItem = ({ item }: { item: SidebarItemType }) => {
           </button>
 
           {subMenuOpen && (
-            <div className="my-2 ml-12 flex flex-col space-y-4">
+            <div className="align-right my-2 flex w-full flex-col">
               {item.subMenuItems?.map((subItem, idx) => {
                 return (
-                  <Link
-                    key={idx}
-                    href={subItem.path}
-                    className={cn(
-                      "rounded-lg p-2 hover:bg-gray-200",
-                      pathname.includes(subItem.path)
-                        ? "bg-gray-100 font-bold"
-                        : "",
-                    )}
-                  >
-                    <span>{subItem.title}</span>
-                  </Link>
+                  <div className="flex w-full flex-row">
+                    <Link
+                      key={idx}
+                      href={subItem.path}
+                      className={cn(
+                        "w-full rounded-lg p-2 hover:bg-gray-200",
+                        pathname.includes(subItem.path)
+                          ? "bg-gray-100 font-semibold"
+                          : "",
+                      )}
+                    >
+                      <span>{subItem.title}</span>
+                    </Link>
+                  </div>
                 );
               })}
             </div>
@@ -60,7 +60,7 @@ const SidebarItem = ({ item }: { item: SidebarItemType }) => {
       ) : (
         <Link
           href={item.path}
-          className={`flex flex-row items-center space-x-4 rounded-lg p-2 hover:bg-zinc-100 ${
+          className={`flex flex-row items-center space-x-2 rounded-lg p-1 hover:bg-zinc-100 ${
             item.path.includes(pathname) ? "bg-zinc-100" : ""
           }`}
         >
