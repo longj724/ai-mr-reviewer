@@ -40,7 +40,7 @@ export type MergeRequest = {
   source_project_id: string;
 };
 
-export type MergeRequestDiff = {
+export type MergeRequestFileDiff = {
   diff: string;
   new_path: string;
   old_path: string;
@@ -53,6 +53,7 @@ export type ParsedDiff = {
   lineCountOld: number;
   startLineNew: number;
   lineCountNew: number;
+  summary: string | null;
 };
 
 export type SidebarItem = {

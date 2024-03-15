@@ -13,7 +13,7 @@ type Props = {
 const Diff = ({ parsedDiff }: Props) => {
   const styles: ReactDiffViewerStylesOverride = {
     diffContainer: {
-      width: "60%",
+      width: parsedDiff.summary ? "60%" : "100%",
       borderRadius: "4px",
     },
   };
@@ -27,13 +27,15 @@ const Diff = ({ parsedDiff }: Props) => {
         oldValue={parsedDiff.oldCode}
         newValue={parsedDiff.newCode}
       />
-      <div className="flex w-2/5 flex-row">
-        <div className="h-full w-full rounded-lg p-2">
-          <div className="h-full  bg-white">
-            <p className="ml-2">Code Summary</p>
+      {parsedDiff.summary !== null && (
+        <div className="flex w-2/5 flex-row">
+          <div className="h-full w-full rounded-lg p-2">
+            <div className=" rounded-md bg-white p-2">
+              <p className="ml-2">{parsedDiff.summary}</p>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

@@ -26,7 +26,7 @@ const SidebarItem = ({ item }: { item: SidebarItemType }) => {
           >
             <div className="flex flex-row items-center space-x-2">
               {item.icon}
-              <span className="flex text-xl  font-bold">{item.title}</span>
+              <span className="flex text-xl  font-semibold">{item.title}</span>
             </div>
 
             <div className={`${subMenuOpen ? "rotate-180" : ""} flex`}>
@@ -36,24 +36,19 @@ const SidebarItem = ({ item }: { item: SidebarItemType }) => {
 
           {subMenuOpen && (
             <div className="align-right my-2 flex w-full flex-col">
-              {item.subMenuItems?.map((subItem, idx) => {
-                return (
-                  <div className="flex w-full flex-row">
-                    <Link
-                      key={idx}
-                      href={subItem.path}
-                      className={cn(
-                        "w-full rounded-lg p-2 hover:bg-gray-200",
-                        pathname.includes(subItem.path)
-                          ? "bg-gray-100 font-semibold"
-                          : "",
-                      )}
-                    >
-                      <span>{subItem.title}</span>
-                    </Link>
-                  </div>
-                );
-              })}
+              {item.subMenuItems?.map((subItem, idx) => (
+                <div className="flex w-full flex-row" key={idx}>
+                  <Link
+                    href={subItem.path}
+                    className={cn(
+                      "w-full rounded-lg p-2 hover:bg-gray-200",
+                      pathname.includes(subItem.path) ? "bg-gray-100 " : "",
+                    )}
+                  >
+                    <span>{subItem.title}</span>
+                  </Link>
+                </div>
+              ))}
             </div>
           )}
         </>

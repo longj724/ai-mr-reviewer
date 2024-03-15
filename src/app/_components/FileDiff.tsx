@@ -1,15 +1,17 @@
 "use client";
 // External Dependencies
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChevronDown, ChevronRight, ClipboardCopy } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
 
 // Relative Dependencies
-import { MergeRequestDiff, ParsedDiff } from "~/lib/types";
+import { MergeRequestFileDiff, ParsedDiff } from "~/lib/types";
 import Diff from "./Diff";
 import { Button } from "~/components/ui/button";
+import LoadingSpinner from "~/components/ui/LoadingSpinner";
 
 type Props = {
-  diffInfo: MergeRequestDiff;
+  diffInfo: MergeRequestFileDiff;
 };
 
 const parseDiff = (diffString: string): ParsedDiff[] => {
@@ -35,6 +37,7 @@ const parseDiff = (diffString: string): ParsedDiff[] => {
           lineCountOld,
           startLineNew,
           lineCountNew,
+          summary: null,
         };
       } else {
         console.error("Invalid diff header format:", line);
@@ -57,14 +60,40 @@ const parseDiff = (diffString: string): ParsedDiff[] => {
   return diffs;
 };
 
-const FileDiff = ({ diffInfo }: Props) => {
-  const [generateDiffSummary, setGenerateDiffSummary] = useState(false);
+const FileDiff = ({
+  diffInfo: { diff: fileDiff, new_path: newPath },
+}: Props) => {
+  const [diffs, setDiffs] = useState<ParsedDiff[]>([]);
   const [showDiff, setShowDiff] = useState(true);
-  const diffs = parseDiff(diffInfo.diff);
-  const { old_path: oldPath, new_path: newPath } = diffInfo;
+
+  const { mutate: getFileDiffMutation, isLoading } = useMutation({
+    mutationFn: async () => {
+      const response = await fetch("/api/get-file-diff-summary", {
+        method: "POST",
+        body: JSON.stringify({ diffs }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const { data }: { data: ParsedDiff[] } = await response.json();
+      return data;
+    },
+    onSuccess: (data) => {
+      setDiffs(data);
+    },
+  });
+
+  useEffect(() => {
+    setDiffs(parseDiff(fileDiff));
+  }, [fileDiff]);
 
   const onShowDiff = () => {
     setShowDiff(!showDiff);
+  };
+
+  const onGenerateDiffSummary = async () => {
+    getFileDiffMutation();
   };
 
   return (
@@ -83,7 +112,12 @@ const FileDiff = ({ diffInfo }: Props) => {
           </button>
           <p>{newPath}</p>
         </div>
-        <Button className="ml-auto mr-8 h-8">Generate Diff Summary</Button>
+        <div className="ml-auto mr-8 flex h-8 flex-row items-center gap-2">
+          <Button className="h-8" onClick={onGenerateDiffSummary}>
+            Generate Diff Summary
+          </Button>
+          {isLoading && <LoadingSpinner />}
+        </div>
       </div>
       {showDiff &&
         diffs.map((diff) => <Diff parsedDiff={diff} key={diff.oldCode} />)}

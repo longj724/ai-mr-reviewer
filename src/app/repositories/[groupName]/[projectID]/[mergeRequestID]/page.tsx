@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 
 // Relative Dependencies
-import { MergeRequestDiff } from "~/lib/types";
+import { MergeRequestFileDiff } from "~/lib/types";
 import FileDiff from "~/app/_components/FileDiff";
 
 type Props = {
@@ -25,7 +25,7 @@ const Page = ({ params: { groupName, projectID, mergeRequestID } }: Props) => {
             Authorization: `Bearer ${process.env.NEXT_PUBLIC_GITLAB_ACCESS_TOKEN}`,
           },
         },
-      ).then((res) => res.json())) as Promise<MergeRequestDiff[]>,
+      ).then((res) => res.json())) as Promise<MergeRequestFileDiff[]>,
   );
 
   return (

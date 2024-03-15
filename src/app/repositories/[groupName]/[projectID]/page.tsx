@@ -3,7 +3,7 @@
 type Props = {};
 
 const Page = (props: Props) => {
-  return <div>Project Page</div>;
+  return <div className="ml-2">Search for a merge request</div>;
 };
 
 export default Page;
