@@ -11,10 +11,12 @@ type Props = {
 };
 
 const Diff = ({ parsedDiff }: Props) => {
+  const { newCode, oldCode, startLineOld, summary } = parsedDiff;
   const styles: ReactDiffViewerStylesOverride = {
     diffContainer: {
-      width: parsedDiff.summary ? "60%" : "100%",
+      width: summary ? "60%" : "100%",
       borderRadius: "4px",
+      fontSize: "0.8rem",
     },
   };
 
@@ -23,15 +25,15 @@ const Diff = ({ parsedDiff }: Props) => {
       <ReactDiffViewer
         styles={styles}
         splitView={false}
-        linesOffset={parsedDiff.startLineOld}
-        oldValue={parsedDiff.oldCode}
-        newValue={parsedDiff.newCode}
+        linesOffset={startLineOld}
+        oldValue={oldCode}
+        newValue={newCode}
       />
-      {parsedDiff.summary !== null && (
+      {summary !== null && (
         <div className="flex w-2/5 flex-row">
           <div className="h-full w-full rounded-lg p-2">
             <div className=" rounded-md bg-white p-2">
-              <p className="ml-2">{parsedDiff.summary}</p>
+              <p className="ml-2">{summary}</p>
             </div>
           </div>
         </div>
