@@ -1,11 +1,11 @@
 // External Dependencies
-import OpenAI from "openai";
+import Replicate from "replicate";
 
 // Relative Dependencies
 import { ParsedDiff } from "~/lib/types";
 
-const openai = new OpenAI({
-  apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
+const replicate = new Replicate({
+  auth: process.env.REPLICATE_API_KEY,
 });
 
 export async function POST(req: Request) {
@@ -14,32 +14,37 @@ export async function POST(req: Request) {
   const returnedDiffs = await Promise.all(
     diffs.map(async (diff) => {
       const { oldCode, newCode } = diff;
-      const response = await openai.chat.completions.create({
-        model: "gpt-3.5-turbo",
-        messages: [
-          {
-            role: "system",
-            content: `You are a code reviewer. You are given a code diff and you need to summarize the change in a few sentences.
+      const prompt = `You are a code reviewer. You are given a code diff and you need to summarize the change in a few sentences.
                       You will be given code labeled "old code:" and "new code:". Try to be concise but if the code change is
                       large you can provide a more detailed explanation. Avoid starting the response with statements like:
                       "The code change is..." or "The diff is...".
-                  
-                      Here is the old code: ${oldCode}
-                      Here is the new code: ${newCode}
-                    `,
-          },
-        ],
-      });
-      console.log("response is", response.choices[0]);
+                      Old code: ${oldCode}
+                      New code: ${newCode}
+                    `;
 
-      const summary = response.choices[0]
-        ? response.choices[0].message.content
-        : "Unable to generate summary";
+      const output = await replicate.run(
+        "mistralai/mixtral-8x7b-instruct-v0.1",
+        {
+          input: {
+            top_k: 50,
+            top_p: 0.95,
+            prompt: prompt,
+            temperature: 0.7,
+            max_new_tokens: 512,
+            min_new_tokens: -1,
+            repetition_penalty: 1,
+          },
+        },
+      );
+      // @ts-ignore
+      const text = output.join("");
+
       return {
         ...diff,
-        summary,
+        summary: text,
       };
     }),
   );
+
   return new Response(JSON.stringify({ data: returnedDiffs }));
 }
