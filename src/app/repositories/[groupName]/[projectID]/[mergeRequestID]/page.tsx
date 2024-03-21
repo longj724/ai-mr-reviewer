@@ -15,11 +15,15 @@ type Props = {
 };
 
 const Page = ({ params: { groupName, projectID, mergeRequestID } }: Props) => {
-  const { data: mergeRequestDiffs } = useQuery(
+  const {
+    data: mergeRequestDiffs,
+    isLoading,
+    isError,
+  } = useQuery(
     [groupName, projectID, mergeRequestID],
     async () =>
       (await fetch(
-        `https://gitlab.com/api/v4/projects/${projectID}/merge_requests/${mergeRequestID}/diffs`,
+        `${process.env.NEXT_PUBLIC_BASE_GITLAB_URL}/api/v4/projects/${projectID}/merge_requests/${mergeRequestID}/diffs`,
         {
           headers: {
             Authorization: `Bearer ${process.env.NEXT_PUBLIC_GITLAB_ACCESS_TOKEN}`,
@@ -27,6 +31,11 @@ const Page = ({ params: { groupName, projectID, mergeRequestID } }: Props) => {
         },
       ).then((res) => res.json())) as Promise<MergeRequestFileDiff[]>,
   );
+
+  // @ts-ignore
+  if (isLoading || isError || mergeRequestDiffs.error) {
+    return <div>Unable to find Merge Request Diff</div>;
+  }
 
   return (
     <div className="flex h-full flex-col gap-2">

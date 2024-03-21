@@ -8,6 +8,7 @@ import Link from "next/link";
 
 // Relative Dependencies
 import { cn } from "~/lib/utils";
+import useDebounce from "~/hooks/useDebounce";
 
 type Props = {
   children?: React.ReactNode;
@@ -19,45 +20,29 @@ type Props = {
 
 const Layout = ({ children, params: { groupName, projectID } }: Props) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<MergeRequest[]>([]);
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
-  const { data: mergeRequests } = useQuery(
-    [groupName, projectID],
-    async () =>
-      (await fetch(
-        `https://gitlab.com/api/v4/projects/${projectID}/merge_requests/`,
+  let { data: mergeRequests } = useQuery({
+    queryKey: [groupName, projectID, debouncedSearchQuery],
+    enabled: debouncedSearchQuery.length > 0,
+    queryFn: async () => {
+      return (await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_GITLAB_URL}/api/v4/projects/${projectID}/merge_requests?scope=all&search=${debouncedSearchQuery}&in=title`,
         {
           headers: {
             Authorization: `Bearer ${process.env.NEXT_PUBLIC_GITLAB_ACCESS_TOKEN}`,
           },
         },
-      ).then((res) => res.json())) as Promise<MergeRequest[]>,
-  );
+      ).then((res) => res.json())) as Promise<MergeRequest[]>;
+    },
+  });
 
   const onSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
   };
 
-  useEffect(() => {
-    if (searchQuery.length === 0) {
-      setSearchResults([]);
-      return;
-    }
-
-    const delayDebounce = setTimeout(async () => {
-      if (mergeRequests && mergeRequests.length > 0) {
-        const searchResults = mergeRequests.filter((mergeRequest) =>
-          mergeRequest.title.toLowerCase().includes(searchQuery.toLowerCase()),
-        );
-        setSearchResults(searchResults);
-      }
-    }, 300);
-
-    return () => clearTimeout(delayDebounce);
-  }, [searchQuery]);
-
   const clearSearchResults = () => {
-    setSearchResults([]);
+    setSearchQuery("");
   };
 
   return (
@@ -86,7 +71,7 @@ const Layout = ({ children, params: { groupName, projectID } }: Props) => {
           <div
             id="dropdown"
             className={cn(
-              !searchResults.length || searchQuery === "" ? "hidden" : "",
+              !mergeRequests?.length || searchQuery === "" ? "hidden" : "",
               "z-10 divide-y divide-gray-100 rounded-lg bg-white shadow dark:bg-gray-700",
             )}
           >
@@ -94,17 +79,18 @@ const Layout = ({ children, params: { groupName, projectID } }: Props) => {
               className="py-2 text-sm text-gray-700 dark:text-gray-200"
               aria-labelledby="dropdownDefaultButton"
             >
-              {searchResults.map(({ id, iid, title }) => (
-                <li key={id} className="cursor-pointer dark:hover:text-white">
-                  <Link
-                    onClick={clearSearchResults}
-                    href={`/repositories/${groupName}/${projectID}/${iid}`}
-                    className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600"
-                  >
-                    {title}
-                  </Link>
-                </li>
-              ))}
+              {mergeRequests &&
+                mergeRequests.map(({ id, iid, title }) => (
+                  <li key={id} className="cursor-pointer dark:hover:text-white">
+                    <Link
+                      onClick={clearSearchResults}
+                      href={`/repositories/${groupName}/${projectID}/${iid}`}
+                      className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600"
+                    >
+                      {title}
+                    </Link>
+                  </li>
+                ))}
             </ul>
           </div>
         </div>
